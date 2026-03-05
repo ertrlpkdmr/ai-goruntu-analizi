@@ -1,0 +1,19 @@
+# Virtual environment
+venv/
+__pycache__/
+*.pyc
+
+# Model files (too large for GitHub)
+face_db.pkl
+*.onnx
+
+# Sensitive
+.env
+
+# Temp files
+photo_search_temp/
+ref_photos/
+
+# IDE
+.vscode/
+.idea/

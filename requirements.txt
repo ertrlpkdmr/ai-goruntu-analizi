@@ -1,0 +1,12 @@
+torch
+torchvision
+flask
+numpy
+opencv-python
+insightface
+onnxruntime
+transformers
+open_clip_torch
+google-genai
+icrawler
+pillow
