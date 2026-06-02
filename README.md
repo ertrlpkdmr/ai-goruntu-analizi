@@ -19,16 +19,32 @@ Görüntü tanıma, yüz analizi ve sohbet özelliklerini tek bir web arayüzün
 
 ## Kurulum
 
+Önce depoyu klonla:
+
 ```bash
-# 1) Depoyu klonla
 git clone https://github.com/ertrlpkdmr/ai-goruntu-analizi.git
 cd ai-goruntu-analizi
+```
 
-# 2) Sanal ortam oluştur ve etkinleştir
-python -m venv venv
-source venv/bin/activate        # Windows: venv\Scripts\activate
+### Windows (PowerShell)
 
-# 3) Bağımlılıkları yükle
+> Python kurulu değilse: `winget install Python.Python.3.12` ya da
+> https://www.python.org/downloads/ (kurulumda **"Add Python to PATH"** işaretle).
+
+```powershell
+py -m venv venv
+venv\Scripts\Activate.ps1
+pip install -r requirements.txt
+```
+
+> `Activate.ps1` "execution policy" hatası verirse bir kez şunu çalıştır, sonra tekrar dene:
+> `Set-ExecutionPolicy -Scope Process -Bypass`
+
+### Linux / macOS
+
+```bash
+python3 -m venv venv
+source venv/bin/activate
 pip install -r requirements.txt
 ```
 
