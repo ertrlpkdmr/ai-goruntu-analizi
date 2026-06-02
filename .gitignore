@@ -1,19 +1,35 @@
-# Virtual environment
+# ===== Sanal ortam & Python =====
 venv/
 __pycache__/
 *.pyc
 
-# Model files (too large for GitHub)
-face_db.pkl
+# ===== Model dosyalari (GitHub 100MB sinirini asar) =====
+*.pth
+*.pkl
 *.onnx
 
-# Sensitive
-.env
+# ===== Egitim & veri klasorleri (cok buyuk) =====
+data/
+custom_data/
 
-# Temp files
+# ===== Degerlendirme / cikti gorselleri =====
+evaluation_results/
+evaluation_results_v2s/
+evaluation_results_v2s_20class/
+
+# ===== Gecici dosyalar =====
+face_ref_temp/
 photo_search_temp/
 ref_photos/
 
-# IDE
+# ===== Loglar =====
+*.log
+
+# ===== Gizli bilgiler =====
+.env
+
+# ===== Gelistirme araclari / IDE =====
 .vscode/
 .idea/
+.claude/
+_bmad/

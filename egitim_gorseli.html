@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Model Egitim Sureci - Gorsel Anlatim</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            color: #fff; padding: 30px;
+        }
+        h1 {
+            text-align: center; font-size: 2em; margin-bottom: 10px;
+            background: linear-gradient(to right, #00c9ff, #92fe9d);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .subtitle { text-align: center; color: #888; margin-bottom: 40px; }
+
+        /* Pipeline */
+        .pipeline { display: flex; align-items: flex-start; justify-content: center; gap: 0; flex-wrap: wrap; margin-bottom: 50px; }
+        .step {
+            background: rgba(255,255,255,0.06); border-radius: 16px; padding: 20px;
+            width: 200px; text-align: center; border: 1px solid rgba(255,255,255,0.08);
+            position: relative;
+        }
+        .step-icon { font-size: 2.5em; margin-bottom: 10px; }
+        .step-title { font-weight: 700; font-size: 1em; margin-bottom: 6px; color: #00c9ff; }
+        .step-desc { font-size: 0.78em; color: #aaa; line-height: 1.5; }
+        .arrow { font-size: 2em; color: #00c9ff; display: flex; align-items: center; padding: 0 8px; margin-top: 30px; }
+
+        /* Transfer Learning Diagram */
+        .section-title {
+            font-size: 1.4em; font-weight: 700; margin: 40px 0 20px;
+            text-align: center; color: #92fe9d;
+        }
+
+        .model-diagram {
+            max-width: 750px; margin: 0 auto 40px; background: rgba(255,255,255,0.04);
+            border-radius: 20px; padding: 30px; border: 1px solid rgba(255,255,255,0.08);
+        }
+
+        .layer-row { display: flex; align-items: center; margin: 8px 0; gap: 10px; }
+        .layer-block {
+            flex: 1; border-radius: 10px; padding: 12px 16px;
+            text-align: center; font-size: 0.85em; font-weight: 600;
+            position: relative; transition: all 0.3s;
+        }
+        .layer-frozen {
+            background: rgba(100,100,255,0.15); border: 2px solid rgba(100,100,255,0.3); color: #8888ff;
+        }
+        .layer-trainable {
+            background: rgba(0,201,255,0.15); border: 2px solid rgba(0,201,255,0.4); color: #00c9ff;
+            animation: pulse 2s infinite;
+        }
+        .layer-new {
+            background: rgba(146,254,157,0.2); border: 2px solid rgba(146,254,157,0.5); color: #92fe9d;
+            animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(0,201,255,0.2); }
+            50% { box-shadow: 0 0 15px 3px rgba(0,201,255,0.15); }
+        }
+        .layer-label { width: 120px; text-align: right; font-size: 0.75em; color: #666; flex-shrink: 0; }
+        .layer-status { width: 100px; font-size: 0.7em; flex-shrink: 0; }
+        .status-frozen { color: #ff6b6b; }
+        .status-training { color: #92fe9d; }
+
+        .legend { display: flex; gap: 20px; justify-content: center; margin: 20px 0; flex-wrap: wrap; }
+        .legend-item { display: flex; align-items: center; gap: 6px; font-size: 0.8em; }
+        .legend-dot { width: 14px; height: 14px; border-radius: 4px; }
+
+        /* Augmentation examples */
+        .aug-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; max-width: 750px; margin: 0 auto 40px; }
+        .aug-card {
+            background: rgba(255,255,255,0.06); border-radius: 12px; padding: 15px;
+            text-align: center; border: 1px solid rgba(255,255,255,0.06);
+        }
+        .aug-icon { font-size: 2em; margin-bottom: 8px; }
+        .aug-name { font-size: 0.85em; font-weight: 700; color: #00c9ff; margin-bottom: 4px; }
+        .aug-desc { font-size: 0.7em; color: #888; }
+
+        /* Training phases */
+        .phases { display: flex; gap: 20px; max-width: 750px; margin: 0 auto 40px; flex-wrap: wrap; justify-content: center; }
+        .phase {
+            flex: 1; min-width: 300px; background: rgba(255,255,255,0.06); border-radius: 16px;
+            padding: 24px; border: 1px solid rgba(255,255,255,0.08);
+        }
+        .phase-header { font-size: 1.1em; font-weight: 700; margin-bottom: 12px; }
+        .phase-1 .phase-header { color: #ffa500; }
+        .phase-2 .phase-header { color: #00c9ff; }
+        .phase-detail { font-size: 0.82em; color: #aaa; line-height: 1.8; }
+        .phase-detail strong { color: #fff; }
+
+        /* Epoch progress */
+        .epoch-bar {
+            max-width: 750px; margin: 0 auto 40px;
+            background: rgba(255,255,255,0.06); border-radius: 16px; padding: 24px;
+            border: 1px solid rgba(255,255,255,0.08);
+        }
+        .epoch-title { font-weight: 700; margin-bottom: 15px; color: #00c9ff; }
+        .bar-container { display: flex; align-items: center; gap: 10px; margin: 8px 0; }
+        .bar-label { width: 70px; font-size: 0.8em; color: #888; text-align: right; }
+        .bar-track { flex: 1; height: 24px; background: rgba(255,255,255,0.05); border-radius: 12px; overflow: hidden; position: relative; }
+        .bar-fill { height: 100%; border-radius: 12px; display: flex; align-items: center; justify-content: flex-end; padding-right: 8px; font-size: 0.7em; font-weight: 700; transition: width 1s; }
+        .bar-val { width: 55px; font-size: 0.8em; text-align: left; }
+
+        /* Sample grid */
+        .sample-text {
+            max-width: 750px; margin: 0 auto 20px; text-align: center;
+            color: #888; font-size: 0.85em;
+        }
+        .class-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; max-width: 750px; margin: 0 auto 40px; }
+        .class-card {
+            background: rgba(255,255,255,0.06); border-radius: 12px; padding: 14px 8px;
+            text-align: center; border: 1px solid rgba(255,255,255,0.06);
+        }
+        .class-emoji { font-size: 2em; margin-bottom: 6px; }
+        .class-name { font-size: 0.8em; font-weight: 600; color: #ccc; }
+        .class-count { font-size: 0.7em; color: #666; margin-top: 2px; }
+    </style>
+</head>
+<body>
+
+<h1>Model Nasil Egitiliyor?</h1>
+<p class="subtitle">EfficientNet V2 Large - Transfer Learning ile Ozel Nesne Tanima</p>
+
+<!-- STEP 1: Pipeline -->
+<div class="pipeline">
+    <div class="step">
+        <div class="step-icon">&#127760;</div>
+        <div class="step-title">1. Veri Toplama</div>
+        <div class="step-desc">Bing'den 10 sinif icin ~600 gorsel otomatik indirildi</div>
+    </div>
+    <div class="arrow">&#10145;</div>
+    <div class="step">
+        <div class="step-icon">&#128248;</div>
+        <div class="step-title">2. Veri Artirma</div>
+        <div class="step-desc">Gorseller dondurulur, kirpilir, renkleri degistirilir → cesitlilik artar</div>
+    </div>
+    <div class="arrow">&#10145;</div>
+    <div class="step">
+        <div class="step-icon">&#129504;</div>
+        <div class="step-title">3. Model Egitimi</div>
+        <div class="step-desc">ImageNet bilgisi + yeni siniflar → 30 epoch egitim</div>
+    </div>
+    <div class="arrow">&#10145;</div>
+    <div class="step">
+        <div class="step-icon">&#9989;</div>
+        <div class="step-title">4. Tahmin</div>
+        <div class="step-desc">Yeni fotograf → "Bu Galatasaray forması!" (%92 guven)</div>
+    </div>
+</div>
+
+<!-- SINIFLAR -->
+<div class="section-title">&#127917; 10 Sinif - Toplanan Veriler</div>
+<div class="class-grid">
+    <div class="class-card"><div class="class-emoji">&#9917;</div><div class="class-name">Galatasaray</div><div class="class-count">~60 gorsel</div></div>
+    <div class="class-card"><div class="class-emoji">&#9917;</div><div class="class-name">Fenerbahce</div><div class="class-count">~60 gorsel</div></div>
+    <div class="class-card"><div class="class-emoji">&#9917;</div><div class="class-name">Besiktas</div><div class="class-count">~60 gorsel</div></div>
+    <div class="class-card"><div class="class-emoji">&#9917;</div><div class="class-name">Trabzonspor</div><div class="class-count">~60 gorsel</div></div>
+    <div class="class-card"><div class="class-emoji">&#129349;</div><div class="class-name">Messi</div><div class="class-count">~60 gorsel</div></div>
+    <div class="class-card"><div class="class-emoji">&#129349;</div><div class="class-name">Ronaldo</div><div class="class-count">~60 gorsel</div></div>
+    <div class="class-card"><div class="class-emoji">&#9917;</div><div class="class-name">Futbol</div><div class="class-count">~60 gorsel</div></div>
+    <div class="class-card"><div class="class-emoji">&#127936;</div><div class="class-name">Basketbol</div><div class="class-count">~60 gorsel</div></div>
+    <div class="class-card"><div class="class-emoji">&#127934;</div><div class="class-name">Tenis</div><div class="class-count">~60 gorsel</div></div>
+    <div class="class-card"><div class="class-emoji">&#127952;</div><div class="class-name">Voleybol</div><div class="class-count">~60 gorsel</div></div>
+</div>
+
+<!-- AUGMENTATION -->
+<div class="section-title">&#128248; Veri Artirma Teknikleri (Data Augmentation)</div>
+<p class="sample-text">Her gorsel egitimde rastgele degistirilir → model daha genel ogrenir</p>
+<div class="aug-grid">
+    <div class="aug-card"><div class="aug-icon">&#128260;</div><div class="aug-name">RandomFlip</div><div class="aug-desc">Gorseli yatay cevirir</div></div>
+    <div class="aug-card"><div class="aug-icon">&#128256;</div><div class="aug-name">RandomCrop</div><div class="aug-desc">Rastgele kirpar</div></div>
+    <div class="aug-card"><div class="aug-icon">&#127912;</div><div class="aug-name">ColorJitter</div><div class="aug-desc">Renk/parlaklik degistirir</div></div>
+    <div class="aug-card"><div class="aug-icon">&#128259;</div><div class="aug-name">Rotation</div><div class="aug-desc">±15° dondurur</div></div>
+    <div class="aug-card"><div class="aug-icon">&#9988;</div><div class="aug-name">RandomErasing</div><div class="aug-desc">Rastgele bolge siler</div></div>
+    <div class="aug-card"><div class="aug-icon">&#127922;</div><div class="aug-name">Mixup</div><div class="aug-desc">2 gorseli karistirir</div></div>
+    <div class="aug-card"><div class="aug-icon">&#9986;</div><div class="aug-name">CutMix</div><div class="aug-desc">Parca kesip yapistir</div></div>
+    <div class="aug-card"><div class="aug-icon">&#128200;</div><div class="aug-name">Normalize</div><div class="aug-desc">Piksel degerlerini olcekle</div></div>
+</div>
+
+<!-- TRANSFER LEARNING DIAGRAM -->
+<div class="section-title">&#129504; Transfer Learning - Model Yapisi</div>
+<div class="model-diagram">
+    <p style="text-align:center; color:#888; font-size:0.85em; margin-bottom:20px;">
+        ImageNet'te 1000 sinif taniyan model → Son katman degistirilip 10 sinif icin yeniden egitilir
+    </p>
+
+    <div class="layer-row">
+        <div class="layer-label">Giris</div>
+        <div class="layer-block layer-frozen">&#128248; Gorsel (224 x 224 x 3 piksel)</div>
+        <div class="layer-status"></div>
+    </div>
+    <div style="text-align:center; color:#444; font-size:1.2em;">&#11015;</div>
+
+    <div class="layer-row">
+        <div class="layer-label">Katman 1-3</div>
+        <div class="layer-block layer-frozen">Kenar + Doku Algilama (Conv Layers)</div>
+        <div class="layer-status status-frozen">&#128274; Faz 1'de donuk</div>
+    </div>
+    <div style="text-align:center; color:#444; font-size:1.2em;">&#11015;</div>
+
+    <div class="layer-row">
+        <div class="layer-label">Katman 4-10</div>
+        <div class="layer-block layer-frozen">Sekil + Desen Algilama</div>
+        <div class="layer-status status-frozen">&#128274; Faz 1'de donuk</div>
+    </div>
+    <div style="text-align:center; color:#444; font-size:1.2em;">&#11015;</div>
+
+    <div class="layer-row">
+        <div class="layer-label">Katman 11-20</div>
+        <div class="layer-block layer-trainable">Nesne Parcalari Algilama</div>
+        <div class="layer-status status-frozen">&#128274;→&#128275; Faz 2'de acilir</div>
+    </div>
+    <div style="text-align:center; color:#444; font-size:1.2em;">&#11015;</div>
+
+    <div class="layer-row">
+        <div class="layer-label">Backbone Sonu</div>
+        <div class="layer-block layer-trainable">Tam Nesne Anlama (Features)</div>
+        <div class="layer-status status-training">&#128275; Faz 2'de egitilir</div>
+    </div>
+    <div style="text-align:center; color:#92fe9d; font-size:1.5em;">&#11015;</div>
+
+    <div class="layer-row">
+        <div class="layer-label">Yeni Katman</div>
+        <div class="layer-block layer-new">&#127919; Siniflandirici: 10 Sinif (GS, FB, BJK, TS, Messi, Ronaldo...)</div>
+        <div class="layer-status status-training">&#128275; Her zaman egitilir</div>
+    </div>
+
+    <div class="legend">
+        <div class="legend-item"><div class="legend-dot" style="background:rgba(100,100,255,0.3)"></div> ImageNet'ten ogrenilmis (donuk)</div>
+        <div class="legend-item"><div class="legend-dot" style="background:rgba(0,201,255,0.3)"></div> Fine-tune ediliyor (Faz 2)</div>
+        <div class="legend-item"><div class="legend-dot" style="background:rgba(146,254,157,0.4)"></div> Sifirdan egitilen katman</div>
+    </div>
+</div>
+
+<!-- EGITIM FAZLARI -->
+<div class="section-title">&#128736; Egitim Fazlari</div>
+<div class="phases">
+    <div class="phase phase-1">
+        <div class="phase-header">&#128274; Faz 1: Classifier Egitimi (Epoch 1-5)</div>
+        <div class="phase-detail">
+            <strong>Ne yapilir:</strong> Sadece son siniflandirici katman egitilir<br>
+            <strong>Neden:</strong> Backbone'un ImageNet bilgisini korumak icin<br>
+            <strong>Parametre:</strong> 12,810 (toplamin %0.01'i)<br>
+            <strong>Hiz:</strong> ~11 saniye / epoch<br>
+            <strong>Sonuc:</strong> %73 dogruluk<br>
+            <strong>LR:</strong> 0.001 (yuksek)
+        </div>
+    </div>
+    <div class="phase phase-2">
+        <div class="phase-header">&#128275; Faz 2: Full Fine-tuning (Epoch 6-30)</div>
+        <div class="phase-detail">
+            <strong>Ne yapilir:</strong> Tum model egitilir (backbone + classifier)<br>
+            <strong>Neden:</strong> Modeli ozel siniflarla ince ayar yapmak<br>
+            <strong>Parametre:</strong> 117,247,082 (tumu)<br>
+            <strong>Hiz:</strong> ~570 saniye / epoch<br>
+            <strong>Sonuc:</strong> %83.85 dogruluk (ve artıyor)<br>
+            <strong>LR:</strong> Backbone: 0.00001 | Classifier: 0.0001
+        </div>
+    </div>
+</div>
+
+<!-- CANLI ILERLEME -->
+<div class="section-title">&#128202; Canli Egitim Ilerlemesi</div>
+<div class="epoch-bar">
+    <div class="epoch-title">Validation Dogrulugu (her epoch sonunda)</div>
+    <div class="bar-container"><div class="bar-label">Epoch 1</div><div class="bar-track"><div class="bar-fill" style="width:50.8%;background:linear-gradient(90deg,#e74c3c,#f39c12)">50.8%</div></div></div>
+    <div class="bar-container"><div class="bar-label">Epoch 2</div><div class="bar-track"><div class="bar-fill" style="width:66.2%;background:linear-gradient(90deg,#f39c12,#f1c40f)">66.2%</div></div></div>
+    <div class="bar-container"><div class="bar-label">Epoch 3</div><div class="bar-track"><div class="bar-fill" style="width:68.5%;background:linear-gradient(90deg,#f39c12,#f1c40f)">68.5%</div></div></div>
+    <div class="bar-container"><div class="bar-label">Epoch 4</div><div class="bar-track"><div class="bar-fill" style="width:73.1%;background:linear-gradient(90deg,#f1c40f,#2ecc71)">73.1%</div></div></div>
+    <div class="bar-container"><div class="bar-label">Epoch 5</div><div class="bar-track"><div class="bar-fill" style="width:71.5%;background:linear-gradient(90deg,#f1c40f,#2ecc71)">71.5%</div></div></div>
+    <div class="bar-container"><div class="bar-label" style="color:#ffa500">&#128274;→&#128275;</div><div class="bar-track" style="background:rgba(255,165,0,0.1)"><div class="bar-fill" style="width:100%;background:none;color:#ffa500;justify-content:center">— Faz 2 Basliyor (Tum model acildi) —</div></div></div>
+    <div class="bar-container"><div class="bar-label">Epoch 6</div><div class="bar-track"><div class="bar-fill" style="width:73.9%;background:linear-gradient(90deg,#f1c40f,#2ecc71)">73.9%</div></div></div>
+    <div class="bar-container"><div class="bar-label">Epoch 7</div><div class="bar-track"><div class="bar-fill" style="width:75.4%;background:linear-gradient(90deg,#2ecc71,#00c9ff)">75.4%</div></div></div>
+    <div class="bar-container"><div class="bar-label">Epoch 8</div><div class="bar-track"><div class="bar-fill" style="width:76.2%;background:linear-gradient(90deg,#2ecc71,#00c9ff)">76.2%</div></div></div>
+    <div class="bar-container"><div class="bar-label">Epoch 9</div><div class="bar-track"><div class="bar-fill" style="width:78.5%;background:linear-gradient(90deg,#2ecc71,#00c9ff)">78.5%</div></div></div>
+    <div class="bar-container"><div class="bar-label">Epoch 11</div><div class="bar-track"><div class="bar-fill" style="width:80.8%;background:linear-gradient(90deg,#00c9ff,#92fe9d)">80.8%</div></div></div>
+    <div class="bar-container"><div class="bar-label">Epoch 14</div><div class="bar-track"><div class="bar-fill" style="width:82.3%;background:linear-gradient(90deg,#00c9ff,#92fe9d)">82.3%</div></div></div>
+    <div class="bar-container"><div class="bar-label">Epoch 15</div><div class="bar-track"><div class="bar-fill" style="width:83.9%;background:linear-gradient(90deg,#00c9ff,#92fe9d)">83.9%</div></div></div>
+    <div class="bar-container"><div class="bar-label">Epoch 17</div><div class="bar-track"><div class="bar-fill" style="width:82.3%;background:linear-gradient(90deg,#00c9ff,#92fe9d)">82.3%</div></div></div>
+    <div class="bar-container"><div class="bar-label" style="color:#666">Epoch 18-30</div><div class="bar-track" style="background:rgba(255,255,255,0.03)"><div class="bar-fill" style="width:90%;background:repeating-linear-gradient(90deg,rgba(0,201,255,0.1) 0px,rgba(0,201,255,0.1) 10px,transparent 10px,transparent 20px);color:#666;justify-content:center">⏳ Devam ediyor...</div></div></div>
+</div>
+
+<p style="text-align:center; color:#555; font-size:0.8em; margin-top:40px;">
+    Makine Ogrenmesi Dersi Projesi | PyTorch + EfficientNet V2 Large | Transfer Learning
+</p>
+
+</body>
+</html>
