@@ -25,6 +25,12 @@ ref_photos/
 # ===== Loglar =====
 *.log
 
+# ===== Raporlar (repoda tutulmuyor) =====
+RAPOR.md
+RAPOR.docx
+RAPOR_SUNUM.md
+RAPOR_SUNUM.pdf
+
 # ===== Gizli bilgiler =====
 .env
 
